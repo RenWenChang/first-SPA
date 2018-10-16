@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div >
     <navbar/> 
+    <alert/>
     <div class="container-fluid">
       <div class="row">
         <sidebar/> 
@@ -20,10 +21,12 @@
 <script>
     import navbar from './navbar'
     import sidebar from './sidebar'
+    import alert from './alertmessage'
     export default{
         components :{
             navbar,
             sidebar,
+            alert,
         }
     }
 </script>

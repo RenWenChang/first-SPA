@@ -1,5 +1,6 @@
 <template lang="">
-    <div>
+<div>
+        <loading :active.sync="isLoading" ></loading>
         <div class="text-right mt-4"><button class='btn btn-outline-primary btn-sm' data-toggle="modal" @click="openmodal(true)">建立新產品</button></div>
         <table class="table table-dark mt-4">
             <thead>
@@ -19,9 +20,9 @@
                     <td></td>
                     <td>{{item.title}}</td>
                     <td></td>
-                    <td class="text-right">{{item.origin_price}}</td>
+                    <td class="text-right">{{item.origin_price |currency}}</td>
                     <td></td>
-                    <td class="text-right">{{item.price}}</td>
+                    <td class="text-right">{{item.price|currency}}</td>
                     <td></td>
                     <td>
                         <span v-if="item.is_enabled==1">啟用</span>
@@ -35,6 +36,16 @@
                 </tr>
             </tbody>
         </table>
+
+        <nav aria-label="Page navigation example ">
+          <ul class="pagination">
+            <li class="page-item" :class="{'disabled':!pagination.has_pre}"><a class="page-link bg-dark text-light" @click.prevent="getproducts(pagination.current_page-1)" href="#" >Previous</a></li>
+            <li class="page-item" v-for="page in pagination.total_pages" :key="page" :class="{'active':pagination.current_page===page}"><a class="page-link bg-dark text-light" @click.prevent="getproducts(page)" href="#">{{page}}</a></li>
+            <li class="page-item" :class="{'disabled':!pagination.has_next}"><a class="page-link bg-dark text-light" @click.prevent="getproducts(pagination.current_page+1)" href="#">Next</a></li>
+          </ul>
+        </nav>
+
+
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
   aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -57,10 +68,10 @@
             </div>
             <div class="form-group">
               <label for="customFile">或 上傳圖片
-                <i class="fas fa-spinner fa-spin"></i>
+                <i class="fas fa-spinner fa-pulse" v-if="status.fileUploading"></i>
               </label>
               <input type="file" id="customFile" class="form-control"
-                ref="files" >
+                ref="files" @change='uploadFile'>
             </div>
             <img img="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=828346ed697837ce808cae68d3ddc3cf&auto=format&fit=crop&w=1350&q=80"
               class="img-fluid":src="tempproduct.imageUrl" alt="">
@@ -150,7 +161,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
-        <button type="button" class="btn btn-danger" @click='add(id)'>確認刪除</button>
+        <button type="button" class="btn btn-danger" @click='delProductModal(id)'>確認刪除</button>
       </div>
     </div>
   </div>
@@ -159,26 +170,34 @@
 
 
 
-    </div>
+</div>
 </template>
 <script>
 import $ from 'jquery';
     export default{
         data(){
             return{
+                pagination:{},
                 products:[],
                 tempproduct:{},
                 isNew:false,
                 id:'',
+                isLoading:false,
+                status:{
+                  fileUploading:false,
+                },
             }
         },
         methods:{
-            getproducts(){
-                const api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/products`;
+            getproducts(page=1){
+                const api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/products?page=${page}`;
                 const vm=this;
+                vm.isLoading=true;
                 this.$http.get(api).then((response) => {
                 console.log(response.data );
                 vm.products = response.data.products;
+                vm.isLoading=false;
+                vm.pagination=response.data.pagination;
                 });
               },
             openmodal(isNew,item){
@@ -199,8 +218,10 @@ import $ from 'jquery';
                     api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/admin/product/${vm.tempproduct.id}`;
                     HTTPmethods="put";
                 }
+                vm.isLoading=true;
                 this.$http[HTTPmethods](api,{data:vm.tempproduct}).then((response) => {
                 console.log(response.data);
+                vm.isLoading=false;
                     if(response.data.success){
                         $('#exampleModal').modal('hide');
                         vm.getproducts();
@@ -214,30 +235,60 @@ import $ from 'jquery';
             opendelProductModal(item){
                 $('#delProductModal').modal('show');
               const vm= this;
-              vm.id = item.id
+              vm.id = item.id;
+              vm.$set(vm.tempproduct,'title',item.title);
                 
             },
-            add(id){
+            delProductModal(id){
+            const vm= this;
             let api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/admin/product/${id}`;
+            vm.isLoading=true;
             this.$http.delete(api).then((response) => {
             console.log(response.data);
+            vm.isLoading=false;
             }); 
             setTimeout('window.location.reload()',1500 );
             $('#delProductModal').modal('hide');
               
             },
 
+            uploadFile(){
+             const uploadedFile = this.$refs.files.files[0];
+             console.log(uploadedFile);
+             const vm=this;
+             const formData=new FormData();
+             formData.append('file-to-upload',uploadedFile);
+             const url =`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/admin/upload`
+              vm.status.fileUploading=true;
+             this.$http.post(url,formData,{
+               headers:{
+                 'Content-type':'multipart/form-data'
+               }
+             }).then((response) => {
+               if(response.data.success){
+                // vm.tempproduct.imageUrl=response.data.imageUrl; 此方法無雙向綁定 以下是解方
+                  vm.$set(vm.tempproduct,'imageUrl',response.data.imageUrl);
+                  
+               }else{
+                  this.$bus.$emit('messsage:push',response.data.message,'danger');
+               }
+                  vm.status.fileUploading=false;
+            }); 
+
+            },
 
 
+//上傳圖片有大bug 其他項目互相影響編輯
 
 
-        
+       // console.log();
 
 
 
         },
         created() {
             this.getproducts();
+
         },
     }
 </script>   
