@@ -37,8 +37,9 @@
         </button>
       </td>
       <td class="align-middle">{{ item.product.title}}</td>
-      <td class="align-middle"><button type="" class="btn btn-outline-dark btn-sm" disabled>{{ item.product.num}}{{ item.product.unit }}</button></td>
-      <td class="align-middle text-right">{{ item.final_total*item.product.num}}</td>
+      <td class="align-middle"><button type="" class="btn btn-outline-dark btn-sm" disabled>{{ item.qty}}{{ item.unit }}</button></td>
+      <td class="align-middle text-right" v-if="!item.product.price">{{ item.product.origin_price*item.qty}}</td>
+      <td class="align-middle text-right" v-if="item.product.price">{{ item.product.price*item.qty}}</td>
     </tr>
   </tbody>
   <tfoot>

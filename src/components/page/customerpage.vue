@@ -50,21 +50,23 @@
         <footer class="blockquote-footer text-right">{{product.description}}</footer>
         </blockquote>
         <div class="d-flex justify-content-between align-items-baseline">
-                                    <!-- <div class="h5">2,800 元</div> -->
+                                    
         <div class="h5" v-if="!product.price">{{product.origin_price}}元</div>
         <del class="h6" v-if="product.price">原價{{product.origin_price}}元</del>
         <div class="h5" v-if="product.price">現在只要{{product.price}}元</div>
 
         </div>
 
-        <select  name="" class="font-control mt-3 w-100 "  v-model="product.num">
-            <option :value="num" v-for="num in 10" :key="num">選購 {{num}} {{product.unit}}</option>
-        </select>
+        <select class="font-control mt-3 w-100 "  v-model="product.num" >
+        <option select="true" >123</option>
+            <option :value="num" v-for="num in 10" :key="num" >選購 {{num}} {{product.unit}}</option>
+        </select><!-- 需要預設值 -->
 
       </div>
       <div class="modal-footer">
-      <div class="text-muted text-nowrap mr-3">小記<strong> {{product.num*product.price}} 元</strong></div>
-        <button type="button" class="btn btn-primary" @click="add_to_cart(product.id)">加至購物車</button>
+      <div class="text-muted text-nowrap mr-3" v-if="!product.price">小記<strong> {{product.num*product.origin_price}} 元</strong></div>
+      <div class="text-muted text-nowrap mr-3" v-if="product.price">小記<strong> {{product.num*product.price}} 元</strong></div>
+        <button type="button" class="btn btn-primary" @click="add_to_cart(product.id,product.num)">加至購物車</button>
       </div>
 
     </div>
@@ -97,7 +99,9 @@ export default {
   data () {
     return {
             products:[],
-            product:{},
+            product:{
+                
+            },
             isLoading:false,
             pagination:{},
             status:{
@@ -128,6 +132,7 @@ export default {
                 console.log(response.data );
                 vm.product = response.data.product;
                 vm.status.lodingItem='';
+
                 });
             },
             add_to_cart(id,qty=1){
