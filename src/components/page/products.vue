@@ -278,13 +278,6 @@ import $ from 'jquery';
             },
 
 
-//上傳圖片有大bug 其他項目互相影響編輯
-
-
-       // console.log();
-
-
-
         },
         created() {
             this.getproducts();
