@@ -20,7 +20,7 @@
                                 </div>
                             </div>
                             <div class="card-footer d-flex">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" @click="getproduct(item.id)">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" @click="getproduct(item)">
                                     <i class="fas fa-spinner fa-spin" v-if="status.lodingItem===item.id"></i>
                                     查看更多
                                 </button>
@@ -57,16 +57,16 @@
 
         </div>
 
-        <select class="font-control mt-3 w-100 "  v-model="product.num" >
-        <option select="true" >123</option>
+        <select class="font-control mt-3 w-100 "  v-model="num" @change="change(item)"> <!--"-->
+        
             <option :value="num" v-for="num in 10" :key="num" >選購 {{num}} {{product.unit}}</option>
         </select><!-- 需要預設值 -->
 
       </div>
       <div class="modal-footer">
-      <div class="text-muted text-nowrap mr-3" v-if="!product.price">小記<strong> {{product.num*product.origin_price}} 元</strong></div>
-      <div class="text-muted text-nowrap mr-3" v-if="product.price">小記<strong> {{product.num*product.price}} 元</strong></div>
-        <button type="button" class="btn btn-primary" @click="add_to_cart(product.id,product.num)">加至購物車</button>
+      <div class="text-muted text-nowrap mr-3" v-if="!product.price">小記<strong> {{num*product.origin_price}} 元</strong></div>
+      <div class="text-muted text-nowrap mr-3" v-if="product.price">小記<strong> {{num*product.price}} 元</strong></div>
+        <button type="button" class="btn btn-primary" @click="add_to_cart(product.id,num)">加至購物車</button>
       </div>
 
     </div>
@@ -98,6 +98,7 @@ import $ from "jquery";
 export default {
   data () {
     return {
+            num:1,
             products:[],
             product:{
                 
@@ -123,10 +124,10 @@ export default {
                 vm.isLoading=false;
                 });
             },
-            getproduct(id){
-                const api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/product/${id}`;
+            getproduct(item){
+                const api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/product/${item.id}`;
                 const vm=this;
-                vm.status.lodingItem=id;
+                vm.status.lodingItem=item.id;
                 this.$http.get(api).then((response) => {
                     $('#productModalLong').modal('show');
                 console.log(response.data );
@@ -135,6 +136,13 @@ export default {
 
                 });
             },
+
+            change(item){
+                const vm=this;
+               console.log(item.num);
+                console.log(vm.product.num);
+            },
+
             add_to_cart(id,qty=1){
                 const api=`${process.env.APIPATH}/api/${process.env.COSTOMPATH}/cart`;
                 const vm=this;
