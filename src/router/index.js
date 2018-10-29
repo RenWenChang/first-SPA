@@ -3,6 +3,8 @@ import Router from 'vue-router'
 import login from '@/components/page/login'
 import dashboard from '@/components/dashboard'
 import products from '@/components/page/products'
+import customer_info_form from '@/components/page/customer info form'
+import ordercheck from '@/components/page/ordercheck'
 
 import customerpage from '@/components/page/customerpage'
 import coupon from '@/components/page/coupon'
@@ -33,7 +35,19 @@ export default new Router({
         name: 'products',
         component: products,  
         meta: { requiresAuth: true },
-        }
+        },
+        {
+        path: 'coupon',
+        name: 'coupon',
+        component: coupon, 
+        meta: { requiresAuth: true }, 
+        },
+        {
+        path: 'orderlist',
+        name: 'orderlist',
+        component: orderlist, 
+        meta: { requiresAuth: true }, 
+        },
       ]
     },
     {
@@ -48,20 +62,18 @@ export default new Router({
         
         },
         {
-          path: 'coupon',
-          name: 'coupon',
-          component: coupon, 
-          meta: { requiresAuth: true }, 
-  
-          },
-          {
-            path: 'orderlist',
-            name: 'orderlist',
-            component: orderlist, 
-            meta: { requiresAuth: true }, 
-    
-            },
+        path: 'customer info form',
+        name: 'customer info form',
+        component: customer_info_form,
+
+        },
+        {
+        path: 'ordercheck/:orderId',
+        name: 'ordercheck',
+        component: ordercheck,
+        },
       ]
     },
+
   ]
 })

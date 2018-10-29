@@ -2,7 +2,7 @@
       <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Company name</a>
       <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
-      <i class="fas fa-shopping-cart fa-3x m-2" style="color:#000000" @click='getcart()'></i>
+      <i class="fas fa-shopping-cart fa-3x m-2" @click='getcart()'></i>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
           <a class="nav-link" href="#" @click.prevent="signout">Sign out</a>
@@ -63,10 +63,12 @@
   <div class="input-group-append">
     <button class="btn btn-outline-secondary" type="button">
       套用優惠碼
-    </button>    
-    <button class="btn btn-danger" type="button">
+    </button>
+    <router-link  to="/customer info form" >    
+    <button class="btn btn-danger" type="button" @click="closeChart">
       結帳
     </button>
+    </router-link>
   </div>
 </div>
 
@@ -126,6 +128,9 @@ final_total:'',
                 });
             
             },
+            closeChart(){
+              $('#Modalcart').modal('hide');
+            },
 
 
   },
@@ -148,4 +153,14 @@ z-index:999999;
 z-index:499;
 }
 
+
+.fa-shopping-cart:hover{
+  transition:0.2s;
+  color:	#f0f0f0;
+}
+
+.fa-shopping-cart:active
+{
+  color: 	#000000;
+}
 </style>
