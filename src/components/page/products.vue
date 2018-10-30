@@ -247,7 +247,7 @@ import $ from 'jquery';
             console.log(response.data);
             vm.isLoading=false;
             }); 
-            setTimeout('window.location.reload()',1500 );
+            setTimeout('window.location.reload()',1000 );
             $('#delProductModal').modal('hide');
               
             },

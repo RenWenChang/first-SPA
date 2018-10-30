@@ -7,3 +7,4 @@ module.exports = merge(prodEnv, {
   APIPATH : '"https://vue-course-api.hexschool.io"',
   COSTOMPATH : '"zrws-api"',
 })
+//zrws-api

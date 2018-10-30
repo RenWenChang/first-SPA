@@ -40,7 +40,7 @@ export default new Router({
         path: 'coupon',
         name: 'coupon',
         component: coupon, 
-        meta: { requiresAuth: true }, 
+       meta: { requiresAuth: true }, 
         },
         {
         path: 'orderlist',
